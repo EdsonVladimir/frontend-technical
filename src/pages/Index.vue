@@ -61,7 +61,7 @@ export default {
   methods: {
     async getCourses() {
       try {
-        let res = await axios.get(`http://localhost:8001/api/courses`);
+        let res = await axios.get(`http://localhost:8001/public/courses`);
         this.courses=res.data;
         console.log(this.courses)
       } catch (error) {
