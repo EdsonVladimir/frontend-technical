@@ -1,6 +1,6 @@
 <template>
   <q-layout class="bg-grey-1">
-    <EssentialLink :msg="texto"/>
+    <EssentialLink :msg="linksList"/>
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -11,6 +11,7 @@
 import { ref } from 'vue'
 import { fabGithub } from '@quasar/extras/fontawesome-v6'
 import EssentialLink from "components/EssentialLink";
+import { linksList } from '../router/link-list'
 const stringOptions = [
   'quasarframework/quasar',
   'quasarframework/quasar-awesome'
@@ -64,7 +65,7 @@ export default {
       options,
       filteredOptions,
       search,
-      texto: "El valor del componente padre",
+      linksList,
       filter
     }
   }
