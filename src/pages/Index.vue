@@ -13,8 +13,8 @@
           <div class="text-h6">{{ item.name }}</div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none truncate">
-          {{item.description}}
+        <q-card-section class="q-pt-none">
+         <p class="text-cort"> {{item.description}}</p>
         </q-card-section>
         <q-card-actions>
           <q-btn flat round icon="las la-times-clock" />
@@ -88,5 +88,11 @@ export default {
   --max-lines: 3
   max-height: calc(var(--lh) * var(--max-lines))
   overflow: hidden
-
+.text-cort
+  width: 100%
+  overflow: hidden
+  -webkit-box-orient: vertical
+  display: -webkit-box
+  overflow: hidden !important
+  -webkit-line-clamp: 4
 </style>

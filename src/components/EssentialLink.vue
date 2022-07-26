@@ -22,84 +22,113 @@
     </q-toolbar>
   </q-header>
   <q-dialog v-model="bar2" persistent transition-show="flip-down" transition-hide="flip-up">
-    <q-card class="ligtnew text-dark">
-
-      <q-card-section class="row items-center">
+    <q-card class="text-dark" style="width: 700px; max-width: 80vw;">
+      <q-card-section class="row items-center q-pb-none">
         <q-space />
-        <p>Log in or sign up</p>
+        <div class="text-h6">Log in or sign up</div>
         <q-space />
-        <q-btn icon="las la-times" flat round dense v-close-popup />
+        <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
-
-      <q-card-section>
-
-        <div class="row justify-center">
+      <q-card-section class="text-center">
           <q-btn-toggle
             outline rounded
             v-model="slide"
             :options="[
           { label: 'Sign Up', value: 'register' },
           { label: 'Login', value: 'login' },
-
         ]"
           />
-        </div>
       </q-card-section>
+      <q-card-section>
       <q-carousel
         v-model="slide"
         transition-prev="slide-left"
         transition-next="slide-right"
         animated
         control-color="ligtnew"
-        class="rounded-borders"
       >
-        <q-carousel-slide name="register" class="column no-wrap">
-
-            <div class="row justify-center">
-              <h6>Register as a new student</h6>
-            </div>
-          <div class="column">
-           <div class="col-6  text-center" style="width: 400px">
+        <q-carousel-slide name="register" class="text-center">
+          <p>Register as a new student</p>
+          <div class="row">
+           <div class="col-6">
              <div class="q-pa-md">
-               <div class="q-gutter-y-md column" style="max-width: 300px">
-                 <q-input filled bottom-slots v-model="full_name" label="Label" counter :dense="dense">
+               <div class="q-gutter-y-md column">
+                 <q-input outlined name="full_name" type="text" v-model="userData.full_name" label="Full name" :dense="true" :options-dense="true">
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-input filled bottom-slots v-model="email" label="Label" counter :dense="dense">
+                 <q-input outlined name="email" type="text" v-model="userData.email" label="Username (Email Address)" :dense="true">
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-input filled bottom-slots v-model="pass" label="Label" counter :dense="dense">
+                 <q-input outlined name="pass" type="password" v-model="userData.pass" label="Enter your Password" :dense="true">
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-input filled bottom-slots v-model="pass" label="Label" counter :dense="dense">
+                 <q-input outlined name="passWord" type="password" v-model="userData.passWord" label="Confirm your Password" :dense="true">
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
+                 <q-select outlined  name="id_country" type="number" v-model="userData.model"  option-value="id_country" :options="country" label="Select your Country" option-label="name" :dense="true"/>
+                   <div>
+                   <q-btn unelevated rounded @click="submit" type="button" color="dark">Continue</q-btn>
+                   </div>
                </div>
              </div>
            </div>
-            <div class="col-6" style="width: 400px">
-
+            <div class="col-6">
+              <div class="q-pa-md text-center">
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-github" />
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-facebook" />
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-instagram" />
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-google-plus-g" />
+                <p>Protected by re CAPTCHA and Google's Privacy and Terms</p>
+              </div>
             </div>
-          </div>-
+          </div>
         </q-carousel-slide>
-        <q-carousel-slide name="login" class="column no-wrap">
-          <div class="row justify-center">
-            <h6>Are you an existing student?</h6>
+        <q-carousel-slide name="login" class="text-center">
+          <p>Register as a new student</p>
+          <div class="row">
+            <div class="col-6">
+              <div class="q-pa-md">
+                <div class="q-gutter-y-md column">
+
+                  <q-input outlined name="email" type="text" v-model="userData.email" label="Username (Email Address)" :dense="true">
+                    <template v-slot:append>
+                      <q-icon @click="text = ''" class="las la-times" />
+                    </template>
+                  </q-input>
+                  <q-input outlined name="pass" type="password" v-model="userData.pass" label="Enter your Password" :dense="true">
+                    <template v-slot:append>
+                      <q-icon @click="text = ''" class="las la-times" />
+                    </template>
+                  </q-input>
+                  <div>
+                    <q-btn unelevated rounded @click="submit" type="button" color="dark">Continue</q-btn>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="q-pa-md">
+
+              </div>
+            </div>
           </div>
           <div class="q-mt-md text-center">
             {{ lorem }}
           </div>
         </q-carousel-slide>
       </q-carousel>
+      </q-card-section>
+      <q-card-section>
 
+      </q-card-section>
     </q-card>
   </q-dialog>
 </template>
@@ -108,7 +137,8 @@
 import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-export default defineComponent({
+import axios from "axios";
+export default {
   name: 'EssentialLink',
   props: {
     title: {
@@ -130,19 +160,53 @@ export default defineComponent({
       type: String,
       default: ''
     }
-  }, setup(props){
+  },
+  data() {
+    return {
+      content: this.value,
+      userData:{
+        full_name:null,
+        email:null,
+        pass:null,
+        id_country:0,
+      }
+    };
+  },
+  setup(props){
     const router = useRouter()
     console.log(props)
+
     return  {
       navigateTo(link){
         router.push({path: link})
       },
       bar2: ref(false),
       slide: ref('register'),
-      lorem: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Itaque voluptatem totam, architecto cupiditate officia rerum, error dignissimos praesentium libero ab nemo provident incidunt ducimus iusto perferendis porro earum. Totam, numquam?'
+      country:[],
+      registerUser:{}
     }
-  }
-})
+  },methods:{
+    async getCountry() {
+      try {
+        let res = await axios.get(`http://localhost:8001/api/country`);
+        this.country=res.data;
+      } catch (error) {
+        console.log("error ", error);
+      }
+    },
+    async submit(){
+      try {
+        await axios.post(`http://localhost:8001/api/user`, this.userData);
+      } catch (error){
+        console.log("error ", error);
+      }
+    }
+  },
+  created() {
+  this.getCountry();
+},
+
+}
 /* v-for="link in essentialLinks"
           :key="link.title"
           v-bind="link"*/
@@ -181,7 +245,5 @@ export default defineComponent({
     width: 450px !important
     .q-field__append
       display: none
-.my-card
-  width: 100%
-  max-width: 900px
+
 </style>
