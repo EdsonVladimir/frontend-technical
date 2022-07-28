@@ -73,7 +73,7 @@
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-select outlined  name="id_country" type="number" v-model="userData.model"  option-value="id_country" :options="country" label="Select your Country" option-label="name" :dense="true"/>
+                 <q-select outlined  name="userData.id_country" type="number" v-model="userData.id_country"  option-value="country.id_country" :options="country" label="Select your Country" option-label="name" :dense="true"/>
                    <div>
                    <q-btn unelevated rounded @click="submit" type="button" color="dark">Continue</q-btn>
                    </div>
@@ -98,25 +98,29 @@
               <div class="q-pa-md">
                 <div class="q-gutter-y-md column">
 
-                  <q-input outlined name="email" type="text" v-model="userData.email" label="Username (Email Address)" :dense="true">
+                  <q-input outlined name="email" type="text" v-model="userLogin.email" label="Username (Email Address)" :dense="true">
                     <template v-slot:append>
                       <q-icon @click="text = ''" class="las la-times" />
                     </template>
                   </q-input>
-                  <q-input outlined name="pass" type="password" v-model="userData.pass" label="Enter your Password" :dense="true">
+                  <q-input outlined name="pass" type="password" v-model="userLogin.pass" label="Enter your Password" :dense="true">
                     <template v-slot:append>
                       <q-icon @click="text = ''" class="las la-times" />
                     </template>
                   </q-input>
                   <div>
-                    <q-btn unelevated rounded @click="submit" type="button" color="dark">Continue</q-btn>
+                    <q-btn unelevated rounded @click="login" type="button" color="dark">Continue</q-btn>
                   </div>
                 </div>
               </div>
             </div>
             <div class="col-6">
               <div class="q-pa-md">
-
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-github" />
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-facebook" />
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-instagram" />
+                <q-btn padding="10px 5px" align="around" class="full-width" text-color="black"  color="blue-grey-2" label="Align around" icon="lab la-google-plus-g" />
+                <p>Protected by re CAPTCHA and Google's Privacy and Terms</p>
               </div>
             </div>
           </div>
@@ -138,6 +142,7 @@ import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import axios from "axios";
+import {User} from "src/model/modelUser/User";
 export default {
   name: 'EssentialLink',
   props: {
@@ -164,11 +169,19 @@ export default {
   data() {
     return {
       content: this.value,
+      countryModel:{
+        name:"",
+        id_country:0,
+      },
       userData:{
         full_name:null,
         email:null,
         pass:null,
         id_country:0,
+      },
+      userLogin:{
+        email:null,
+        pass:null,
       }
     };
   },
@@ -196,7 +209,20 @@ export default {
     },
     async submit(){
       try {
-        await axios.post(`http://localhost:8001/api/user`, this.userData);
+       // this.userData.id_country = countryModel.id_country;
+        this.userData.id_country = this.userData.id_country.id_country;
+        console.log(this.userData);
+        const respuesta = await axios.post(`http://localhost:8001/api/user`, this.userData);
+        console.log(respuesta);
+      } catch (error){
+        console.log("error ", error);
+      }
+    },
+    async login(){
+      try {
+        console.log(this.userLogin);
+       const respuesta= await axios.post(`http://localhost:8001/public/authenticate`, this.userLogin);
+        console.log(respuesta);
       } catch (error){
         console.log("error ", error);
       }
