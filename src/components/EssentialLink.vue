@@ -16,12 +16,12 @@
       <q-space />
       <div class="q-pl-sm q-gutter-sm row items-center no-wrap">
         <q-item  class="text-white">
-          <q-btn style="background: #FF0080; color: white" label="Register or Login"  @click="bar2 = true"/>
+          <q-btn style="background: #FF0080; color: white" label="Register or Login"  @click="open()"/>
         </q-item>
       </div>
     </q-toolbar>
   </q-header>
-  <q-dialog v-model="bar2" persistent transition-show="flip-down" transition-hide="flip-up">
+  <q-dialog v-model="bar2" transition-show="flip-down" transition-hide="flip-up">
     <q-card class="text-dark" style="width: 700px; max-width: 80vw;">
       <q-card-section class="row items-center q-pb-none">
         <q-space />
@@ -52,32 +52,34 @@
           <div class="row">
            <div class="col-6">
              <div class="q-pa-md">
+               <form @submit.prevent="onSubmit">
                <div class="q-gutter-y-md column">
-                 <q-input outlined name="full_name" type="text" v-model="userData.full_name" label="Full name" :dense="true" :options-dense="true">
+                 <q-input outlined type="text" v-model="userForm.full_name" label="Full name" :dense="true" :options-dense="true" required>
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-input outlined name="email" type="text" v-model="userData.email" label="Username (Email Address)" :dense="true">
+                 <q-input outlined  type="email" v-model="userForm.email" label="Username (Email Address)" :dense="true" required>
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-input outlined name="pass" type="password" v-model="userData.pass" label="Enter your Password" :dense="true">
+                 <q-input outlined type="password" v-model="userForm.pass" label="Enter your Password" :dense="true" required>
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-input outlined name="passWord" type="password" v-model="userData.passWord" label="Confirm your Password" :dense="true">
+                 <q-input outlined  type="password" v-model="userForm.passWord" label="Confirm your Password" :dense="true" required>
                    <template v-slot:append>
                      <q-icon @click="text = ''" class="las la-times" />
                    </template>
                  </q-input>
-                 <q-select outlined  name="userData.id_country" type="number" v-model="userData.id_country"  option-value="country.id_country" :options="country" label="Select your Country" option-label="name" :dense="true"/>
+                 <q-select outlined  name="userData.id_country" type="number" v-model="userForm.id_country"  option-value="country.id_country" :options="country" label="Select your Country" option-label="name" :dense="true"/>
                    <div>
-                   <q-btn unelevated rounded @click="submit" type="button" color="dark">Continue</q-btn>
+                   <q-btn unelevated rounded  type="submit" color="dark">Continue</q-btn>
                    </div>
                </div>
+               </form>
              </div>
            </div>
             <div class="col-6">
@@ -93,24 +95,26 @@
         </q-carousel-slide>
         <q-carousel-slide name="login" class="text-center">
           <p>Register as a new student</p>
+
           <div class="row">
             <div class="col-6">
               <div class="q-pa-md">
                 <div class="q-gutter-y-md column">
-
-                  <q-input outlined name="email" type="text" v-model="userLogin.email" label="Username (Email Address)" :dense="true">
+                  <form @submit.prevent="submitLogin">
+                  <q-input outlined name="email" type="text" v-model="loginForm.email" label="Username (Email Address)" :dense="true">
                     <template v-slot:append>
                       <q-icon @click="text = ''" class="las la-times" />
                     </template>
                   </q-input>
-                  <q-input outlined name="pass" type="password" v-model="userLogin.pass" label="Enter your Password" :dense="true">
+                  <q-input outlined name="pass" type="password" v-model="loginForm.pass" label="Enter your Password" :dense="true">
                     <template v-slot:append>
                       <q-icon @click="text = ''" class="las la-times" />
                     </template>
                   </q-input>
                   <div>
-                    <q-btn unelevated rounded @click="login" type="button" color="dark">Continue</q-btn>
+                    <q-btn unelevated rounded  type="submit" color="dark">Continue</q-btn>
                   </div>
+                  </form>
                 </div>
               </div>
             </div>
@@ -138,11 +142,12 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
 import axios from "axios";
-import {User} from "src/model/modelUser/User";
+
+import useAuth from "src/composables/useAuth";
+
 export default {
   name: 'EssentialLink',
   props: {
@@ -173,63 +178,70 @@ export default {
         name:"",
         id_country:0,
       },
-      userData:{
-        full_name:null,
-        email:null,
-        pass:null,
-        id_country:0,
-      },
-      userLogin:{
-        email:null,
-        pass:null,
-      }
     };
   },
   setup(props){
-    const router = useRouter()
     console.log(props)
-
+    const bar2 = ref(false);
+    const slide = ref('register');
+    let router = useRouter();
+    console.log(props)
+    const { loginUser } = useAuth()
+    const userForm = ref ({
+      full_name:'',
+      email:'',
+      pass:'',
+      id_country:0
+    })
+    const loginForm = ref ({
+      email:'',
+      pass:''
+    })
     return  {
-      navigateTo(link){
-        router.push({path: link})
-      },
-      bar2: ref(false),
-      slide: ref('register'),
+      slide,
       country:[],
-      registerUser:{}
+      userForm,
+      bar2,
+      onSubmit:async () =>{
+        userForm.value.id_country = userForm.value.id_country.id_country;
+        try{
+        const respuesta = await axios.post(`http://localhost:8001/api/user`, userForm.value);
+          slide.value='login'
+
+        } catch (error) {
+          console.log("error ", error);
+        }
+      },
+      loginForm,
+      submitLogin:async () =>{
+        try {
+
+        const resp = await loginUser(loginForm.value);
+          bar2.value = false
+          console.log(props)
+        } catch (error) {
+          console.log("error ", error);
+        }
+      },
+      open(){
+        console.log(bar2)
+        bar2.value = true
+        console.log("hola")
+      }
     }
   },methods:{
     async getCountry() {
+      let res = await axios.get(`http://localhost:8001/api/country`);
       try {
-        let res = await axios.get(`http://localhost:8001/api/country`);
         this.country=res.data;
       } catch (error) {
-        console.log("error ", error);
-      }
-    },
-    async submit(){
-      try {
-       // this.userData.id_country = countryModel.id_country;
-        this.userData.id_country = this.userData.id_country.id_country;
-        console.log(this.userData);
-        const respuesta = await axios.post(`http://localhost:8001/api/user`, this.userData);
-        console.log(respuesta);
-      } catch (error){
-        console.log("error ", error);
-      }
-    },
-    async login(){
-      try {
-        console.log(this.userLogin);
-       const respuesta= await axios.post(`http://localhost:8001/public/authenticate`, this.userLogin);
-        console.log(respuesta);
-      } catch (error){
         console.log("error ", error);
       }
     }
   },
   created() {
   this.getCountry();
+
 },
 
 }

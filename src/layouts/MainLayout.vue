@@ -11,7 +11,9 @@
 import { ref } from 'vue'
 import { fabGithub } from '@quasar/extras/fontawesome-v6'
 import EssentialLink from "components/EssentialLink";
+
 import { linksList } from '../router/link-list'
+import ModalComplete from "components/ModalComplete";
 const stringOptions = [
   'quasarframework/quasar',
   'quasarframework/quasar-awesome'
