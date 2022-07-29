@@ -54,6 +54,7 @@
       <div class="row">
         <div class="col">
           <div class="q-pa-md">
+            <q-btn unelevated rounded  color="dark" @click="updateUserData()">Save</q-btn>
             <form @submit.prevent="onSubmit">
               <div class="q-gutter-y-md column">
                 <q-input outlined type="date" v-model="userForm.date_birth" label="Date of Birth" :dense="true" :options-dense="true" required>
@@ -77,31 +78,53 @@
                   </template>
                 </q-input>
                 <q-select outlined  name="userData.id_country" type="number" v-model="userForm.id_language"  option-value="country.id_country" :options="language" label="Select your Country" option-label="name" :dense="true"/>
-                <q-select outlined  name="userData.id_country" type="number" v-model="userForm.id_education"  option-value="country.id_country" :options="education" label="Select your Country" option-label="name" :dense="true"/>
-                <q-card-section class="row items-center">
-                  <q-btn unelevated rounded  type="submit" color="dark" @click="back()">Back</q-btn>
-                  <q-space />
-                  <q-btn unelevated rounded  type="submit" color="dark" @click="next()">Next</q-btn>
-                </q-card-section>
+                <q-select outlined  name="id_education_level" type="number" v-model="userForm.id_education_level"  option-value="country.id_education_level" :options="education" label="Select your Country" option-label="name" :dense="true"/>
+
               </div>
             </form>
           </div>
         </div>
       </div>
           </q-carousel-slide>
-          <q-carousel-slide name="login" class="text-center">
 
+          <q-carousel-slide name="login" class="text-center">
+            <q-card-section class="row items-center">
+              <q-space />
+
+              <div class="text-h6">{{course.name}}</div>
+              <q-space />
+              <q-btn icon="close" flat round dense v-close-popup />
+            </q-card-section>
+            <q-btn unelevated rounded  color="dark" @click="savePaymentPlan()">Save Pyament</q-btn>
+            <div class="q-pa-md row items-start q-gutter-md">
+
+              <q-card class="my-card" v-for="item in planPago"
+                      :key="item.id_payment_plan"
+                      v-bind="item" @click="RegisterInCourse(item, course)" >
+                <q-card-section class="bg-grey-8 text-white">
+                  <div class="text-h6"></div>
+                  <div class="text-subtitle2">{{item.number_installments}} {{ item.name_plan }}</div>
+                </q-card-section>
+
+                <q-card-actions vertical align="center">
+                  <q-btn flat>${{ course.price /item.number_installments}}</q-btn>
+                  <q-btn flat>save $ {{course.price-item.discount}}</q-btn>
+                </q-card-actions>
+              </q-card>
+            </div>
           </q-carousel-slide>
         </q-carousel>
         <q-card-section class="text-center">
           <q-btn-toggle
-            outline rounded
+            unelevated rounded  color="dark"
             v-model="slide"
             :options="[
           { label: 'Back', value: 'register' },
           { label: 'Next', value: 'login' },
         ]"
           />
+          <q-space />
+
         </q-card-section>
       </q-card-section>
     </q-card>
@@ -133,7 +156,7 @@ export default {
   },
 
   data() {
-
+    const bar2 = ref(false);
     return {
       user : JSON.parse(localStorage.getItem('user')),
       valor:false,
@@ -147,13 +170,22 @@ export default {
        date_birth:new Date(),
         gender:'',
         address:'',
+        bar2,
        phone_number:0,
-       id_language:0,
-        id_education:0
+       id_language:1,
+        id_education:1,
+        id_education_level:0
+      }),
+      resiterCourse: ref ({
+        id_course: 0,
+        id_user: 0,
+        id_payment_plan: 0
       }),
      course:{},
       language:[],
-      education:[]
+      education:[],
+      planPago:[],
+      planSave:{}
     }
   },
 
@@ -175,7 +207,7 @@ export default {
     async getLanguaje() {
       try {
         let res = await axios.get(`http://localhost:8001/api/language`);
-
+        this.language=res.data;
         console.log(this.language)
       } catch (error) {
         console.log("error ", error);
@@ -196,11 +228,26 @@ export default {
       this.slide.value='login'
     },
     completeData(item){
+
     this.valor=true
       this.course = item;
     },
     back(){
       this.valor=false;
+    },
+    async updateUserData(){
+      try {
+        this.userForm.id_user=this.user.id_user;
+        this.userForm.id_language = this.userForm.id_language.id_language;
+        this.userForm.id_education = this.userForm.id_education_level.id_education_level;
+        delete this.userForm.id_education_level;
+        console.log(this.userForm)
+        let res = await axios.put(`http://localhost:8001/api/user-update`, this.userForm);
+        this.education=res.data;
+        console.log(this.education)
+      } catch (error) {
+        console.log("error ", error);
+      }
     },
     async modalOpen(){
       const {openModal} = useAuth()
@@ -212,15 +259,41 @@ export default {
       } catch (error) {
         console.log("error ", error);
       }
-    }
+    },
+    async getPanPago() {
+      try {
+        let res = await axios.get(`http://localhost:8001/api/payment`);
+        this.planPago=res.data;
+        console.log(this.planPago)
+      } catch (error) {
+        console.log("error ", error);
+      }
+    },
+    RegisterInCourse(item){
+      console.log(item)
+      this.planSave=item;
 
+    },
+    async savePaymentPlan(){
+  this.resiterCourse.id_course=this.course.id_course;
+      this.resiterCourse.id_user = this.user.id_user;
+      this.resiterCourse.id_payment_plan=this.planSave.id_payment_plan;
+
+      try {
+        let res = await axios.post(`http://localhost:8001/api/enrolled`, this.resiterCourse);
+        this.valor=false;
+        console.log(res);
+      } catch (error) {
+        console.log("error ", error);
+      }
+    }
 
 },
   created() {
     this.getCourses();
     this.getLanguaje();
     this.getEducation();
-
+  this.getPanPago();
   },
 
 

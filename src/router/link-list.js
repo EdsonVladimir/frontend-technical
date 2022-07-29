@@ -6,9 +6,22 @@ export const linksList = [
     link:'/'
   },
   {
+    title:'Countinuing Education',
+    caption:'Courses',
+    icon:'las la-caret-down',
+    link:'/'
+  },
+  {
     title:'My Courses',
     caption:'My Courses',
     icon:'las la-caret-down',
     link:'/my-courses'
+  },
+  {
+    title:'Community',
+    caption:'Courses',
+    icon:'las la-caret-down',
+    link:'/'
   }
+
 ];

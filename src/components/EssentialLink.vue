@@ -185,6 +185,7 @@ export default {
     const bar2 = ref(false);
     const slide = ref('register');
     let router = useRouter();
+
     console.log(props)
     const { loginUser } = useAuth()
     const userForm = ref ({
@@ -198,6 +199,9 @@ export default {
       pass:''
     })
     return  {
+      navigateTo(link){
+        router.push({path: link})
+      },
       slide,
       country:[],
       userForm,
